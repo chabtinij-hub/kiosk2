@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>IQOS Lebanon — Kiosk Experience</title>
+
+<!--
+════════════════════════════════════════════════════════════════════════
+  IQOS LEBANON — INTERACTIVE KIOSK EXPERIENCE
+  Prepared by Sectrom S.A.L.
+
+  ⚠ CLIENT APPROVAL REQUIRED BEFORE PUBLIC USE
+    Product NAMES are factual. Every description, specification and
+    address below is PLACEHOLDER, written to show structure. Replace
+    all of it with PMI-approved copy and imagery.
+
+    Deliberately NOT included: any claim about health, risk, harm
+    reduction or product benefit. That copy is regulated and must
+    come from the client's compliance team.
+
+  ── HOW TO EDIT ────────────────────────────────────────────────────
+    Scroll to the line marked "EDIT FROM HERE". Everything you need
+    is below it. Nothing above it needs touching.
+
+  ── HOW TO ADD PICTURES ────────────────────────────────────────────
+    1. Upload the image to the same GitHub folder as this file
+    2. Put the filename in that product's  img:  field
+         img: "iluma-i-prime.png"
+    Empty slots show a dashed frame naming the file to add.
+════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+:root{
+  --void:#0a0514; --deep:#150a2e; --mid:#26124f; --lift:#3d1f7a;
+  --glow:#8b6cf0; --ice:#5ec8f0; --warnh:54px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;height:100%;overflow:hidden;background:var(--void);color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;overscroll-behavior:none;
+}
+#field{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(105% 78% at 82% 10%, var(--lift) 0%, transparent 54%),
+    radial-gradient(88% 68% at 10% 94%, #16406e 0%, transparent 50%),
+    linear-gradient(160deg,var(--void) 0%,var(--deep) 46%,var(--mid) 100%);
+}
+#field::after{
+  content:"";position:absolute;top:-30%;left:-30%;width:160%;height:160%;
+  background:radial-gradient(closest-side,rgba(139,108,240,.18),transparent 70%);
+  animation:drift 24s ease-in-out infinite alternate;
+}
+@keyframes drift{from{transform:translate3d(-5%,-3%,0) scale(1)}to{transform:translate3d(7%,5%,0) scale(1.2)}}
+
+.screen{position:fixed;inset:0 0 var(--warnh) 0;z-index:2;display:none;flex-direction:column;opacity:0;transition:opacity 340ms ease}
+.screen.on{display:flex}
+.screen.vis{opacity:1}
+
+#warning{
+  position:fixed;left:0;right:0;bottom:0;height:var(--warnh);z-index:20;
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  background:#050209;border-top:1px solid rgba(255,255,255,.15);padding:0 18px;text-align:center;
+}
+#warning span{font-size:clamp(9.5px,1.15vw,12.5px);font-weight:700;letter-spacing:.045em;text-transform:uppercase;color:rgba(255,255,255,.8);line-height:1.3}
+#warning span.ar{font-weight:600;letter-spacing:0;text-transform:none;font-size:clamp(10.5px,1.25vw,13.5px)}
+
+#attract{align-items:center;justify-content:center;gap:22px;padding:6vw;text-align:center;cursor:pointer}
+#attract .mark{font-size:clamp(12px,1.6vw,17px);font-weight:700;letter-spacing:.3em;color:rgba(255,255,255,.55)}
+#attract h1{font-size:clamp(32px,6.6vw,78px);font-weight:200;letter-spacing:-.03em;line-height:1.05}
+#attract h1 b{font-weight:700}
+#attract p{font-size:clamp(13px,2vw,22px);color:rgba(255,255,255,.58);max-width:26ch;line-height:1.45}
+#tap{
+  margin-top:16px;display:flex;align-items:center;gap:14px;padding:15px 28px 15px 18px;border-radius:99px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  font-size:clamp(13px,1.75vw,19px);font-weight:600;
+}
+.ring{position:relative;width:30px;height:30px;flex:0 0 auto}
+.ring::before,.ring::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #fff}
+.ring::before{animation:pulse 2.4s ease-out infinite}
+.ring::after{animation:pulse 2.4s ease-out infinite 1.2s}
+.ring i{position:absolute;inset:9px;border-radius:50%;background:#fff}
+@keyframes pulse{0%{transform:scale(.45);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+
+#age{align-items:center;justify-content:center;gap:20px;padding:5vw;text-align:center}
+#age h2{font-size:clamp(19px,3.1vw,34px);font-weight:300;max-width:22ch;line-height:1.28}
+#age .legal{font-size:clamp(10.5px,1.25vw,13.5px);color:rgba(255,255,255,.48);max-width:58ch;line-height:1.6}
+.picker{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.picker select{
+  appearance:none;-webkit-appearance:none;min-width:145px;padding:15px 20px;border-radius:12px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.26);
+  color:#fff;font-size:16px;font-family:inherit;font-weight:600;text-align:center;
+}
+.picker select option{background:#1a0d33;color:#fff}
+.btn{padding:15px 38px;border:0;border-radius:12px;background:#fff;color:var(--void);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.26)}
+#ageErr{color:#ff9a8b;font-size:13.5px;font-weight:600;min-height:17px}
+
+.top{flex:0 0 auto;display:flex;align-items:center;gap:14px;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.brand{font-size:clamp(14px,1.7vw,19px);font-weight:700;letter-spacing:.26em}
+.top .spacer{flex:1}
+.iconbtn{
+  display:flex;align-items:center;gap:8px;padding:10px 17px;border:1px solid rgba(255,255,255,.26);
+  border-radius:10px;background:rgba(255,255,255,.09);color:#fff;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;
+}
+.iconbtn:active{background:rgba(255,255,255,.18)}
+.iconbtn svg{width:14px;height:14px;fill:currentColor}
+.body{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px 24px}
+.body::-webkit-scrollbar{width:0}
+.nav{flex:0 0 auto;display:flex;gap:10px;padding:14px 24px;border-top:1px solid rgba(255,255,255,.1)}
+.nav button{
+  flex:1;padding:15px 8px;border:1px solid rgba(255,255,255,.2);border-radius:12px;
+  background:rgba(255,255,255,.07);color:rgba(255,255,255,.72);font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;
+}
+.nav button.sel{background:#fff;color:var(--void);border-color:#fff}
+
+.cats{display:flex;gap:9px;margin-bottom:20px;flex-wrap:wrap}
+.cats button{
+  padding:9px 18px;border-radius:99px;border:1px solid rgba(255,255,255,.22);
+  background:transparent;color:rgba(255,255,255,.62);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;
+}
+.cats button.sel{background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(198px,1fr));gap:16px}
+.card{
+  position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.15);border-radius:18px;
+  background:rgba(255,255,255,.05);padding:18px 16px 16px;cursor:pointer;
+  transition:transform 200ms ease,border-color 200ms ease;
+}
+.card:active{transform:scale(.975);border-color:rgba(255,255,255,.32)}
+.card::before{
+  content:"";position:absolute;left:50%;top:-45%;width:180px;height:180px;margin-left:-90px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(139,108,240,.5),transparent 72%);opacity:.5;transition:opacity 280ms ease;
+}
+.card:active::before{opacity:1}
+.card h3{position:relative;font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;line-height:1.25}
+.card p{position:relative;font-size:12.5px;color:rgba(255,255,255,.56);line-height:1.42}
+
+.slot{position:relative;height:126px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border-radius:12px;overflow:hidden}
+.slot img{max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 10px 24px rgba(0,0,0,.5))}
+.slot.empty{border:1.5px dashed rgba(255,255,255,.3);background:rgba(255,255,255,.035);flex-direction:column;gap:5px;padding:10px;text-align:center}
+.slot .lbl{font-size:9.5px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.42)}
+.slot .fn{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;color:rgba(255,255,255,.62);word-break:break-all;line-height:1.35}
+
+.detail{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px;align-items:start}
+@media (max-width:820px){.detail{grid-template-columns:1fr;gap:18px}}
+.hero{position:relative;display:flex;align-items:center;justify-content:center;min-height:250px;border-radius:20px;background:radial-gradient(closest-side,rgba(139,108,240,.3),transparent 74%)}
+.hero img{max-height:250px;max-width:100%;object-fit:contain;filter:drop-shadow(0 18px 40px rgba(0,0,0,.55))}
+.hero.empty{border:1.5px dashed rgba(255,255,255,.3);background:rgba(255,255,255,.035);flex-direction:column;gap:7px;padding:20px;text-align:center}
+.hero .lbl{font-size:10px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.44)}
+.hero .fn{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:rgba(255,255,255,.62)}
+.gallery{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.thumb{width:58px;height:58px;border-radius:10px;border:1.5px dashed rgba(255,255,255,.26);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:contain}
+.thumb span{font-size:8.5px;color:rgba(255,255,255,.36);font-weight:700;letter-spacing:.08em}
+.detail h2{font-size:clamp(22px,3.3vw,38px);font-weight:300;letter-spacing:-.02em;margin-bottom:8px}
+.kicker{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--glow);margin-bottom:10px}
+.lead{font-size:clamp(13.5px,1.6vw,17px);color:rgba(255,255,255,.66);line-height:1.62;margin-bottom:20px}
+.specs{display:flex;flex-direction:column;gap:9px;margin-bottom:20px}
+.spec{display:flex;gap:12px;align-items:baseline;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.1)}
+.spec dt{flex:0 0 42%;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.44)}
+.spec dd{flex:1;font-size:14px;font-weight:500}
+.swatches{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:20px}
+.sw{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);font-size:12.5px;font-weight:600}
+.sw i{width:17px;height:17px;border-radius:50%;border:1px solid rgba(255,255,255,.32);display:block}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.city{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.44);margin:20px 0 10px}
+.city:first-child{margin-top:0}
+.store{display:flex;gap:14px;align-items:flex-start;padding:16px;margin-bottom:10px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13)}
+.store .pin{flex:0 0 auto;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(139,108,240,.3)}
+.store .pin svg{width:18px;height:18px;fill:var(--glow)}
+.store h4{font-size:15px;font-weight:700;margin-bottom:3px}
+.store p{font-size:13px;color:rgba(255,255,255,.58);line-height:1.5}
+.store .hrs{font-size:11.5px;color:rgba(255,255,255,.4);margin-top:4px}
+.store .tel{font-size:12.5px;color:var(--ice);margin-top:4px;font-weight:600}
+
+.about{max-width:62ch;margin:0 auto;text-align:center;display:flex;flex-direction:column;gap:16px;align-items:center;padding-top:6px}
+.about h2{font-size:clamp(20px,3vw,32px);font-weight:300;letter-spacing:-.02em}
+.about p{font-size:clamp(13px,1.6vw,16.5px);color:rgba(255,255,255,.62);line-height:1.65}
+.qr{width:142px;height:142px;border-radius:14px;border:1.5px dashed rgba(255,255,255,.34);background:rgba(255,255,255,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px;text-align:center;overflow:hidden}
+.qr .lbl{font-size:9.5px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.44)}
+.qr .fn{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;color:rgba(255,255,255,.6)}
+.qr img{width:100%;height:100%;object-fit:contain;border-radius:8px}
+
+#idle{
+  position:fixed;left:50%;bottom:calc(var(--warnh) + 16px);transform:translateX(-50%);z-index:30;
+  display:none;align-items:center;gap:12px;padding:12px 22px;border-radius:99px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-size:13.5px;font-weight:600;
+}
+#idle.on{display:flex}
+.tag{position:fixed;top:9px;left:50%;transform:translateX(-50%);z-index:40;font-size:9px;font-weight:700;letter-spacing:.13em;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.13);color:rgba(255,255,255,.58);pointer-events:none}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+
+<div id="field"></div>
+<div class="tag" id="demoTag"></div>
+
+<section class="screen" id="attract">
+  <div class="mark" id="aMark"></div>
+  <h1 id="aTitle"></h1>
+  <p id="aSub"></p>
+  <div id="tap"><span class="ring"><i></i></span><span id="aTap"></span></div>
+</section>
+
+<section class="screen" id="age">
+  <h2 id="gTitle"></h2>
+  <div class="picker"><select id="gMonth"></select><select id="gYear"></select></div>
+  <div id="ageErr"></div>
+  <button class="btn" id="gGo"></button>
+  <p class="legal" id="gLegal"></p>
+</section>
+
+<section class="screen" id="main">
+  <div class="top">
+    <span class="brand" id="mBrand"></span><span class="spacer"></span>
+    <button class="iconbtn" id="mHome">
+      <svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3z"/></svg>
+      <span id="mHomeLbl"></span>
+    </button>
+  </div>
+  <div class="body" id="mBody"></div>
+  <div class="nav" id="mNav"></div>
+</section>
+
+<div id="idle"><span id="idleText"></span></div>
+<div id="warning"><span id="warnEn"></span><span class="ar" id="warnAr"></span></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   ▼▼▼   E D I T   F R O M   H E R E   ▼▼▼
+   ════════════════════════════════════════════════════════════════════ */
+
+const CONTENT = {
+
+  brand: "IQOS",
+
+  // Set to "" once real content is in, to hide the demo banner.
+  demoTag: "DEMONSTRATION — DRAFT COPY, PENDING CLIENT APPROVAL",
+
+  attract: {
+    mark:  "IQOS LEBANON",
+    title: "Explore <b>the range</b>",
+    sub:   "Browse the range, compare models and find your nearest store",
+    tap:   "Touch to begin"
+  },
+
+  ageGate: {
+    enabled: true,          // false = skip, internal demos only
+    minAge:  18,
+    title:   "This experience is intended only for adults over 18 who currently use nicotine or tobacco products.",
+    legal:   "Please confirm your date of birth to continue. [ Replace this notice with the client-approved legal wording before public use. ]",
+    button:  "Confirm",
+    error:   "This experience is for adults over 18 only."
+  },
+
+  warning: {
+    en: "This product damages your health and is addictive",
+    ar: "هذا المنتج يضر بالصحة ويسبب الإدمان"
+  },
+
+  nav: [
+    { id:"products", label:"Products"     },
+    { id:"stores",   label:"Find a store" },
+    { id:"support",  label:"Support"      }
+  ],
+  homeLabel: "Start over",
+
+  categories: [
+    { id:"iluma-i",     label:"ILUMA i"     },
+    { id:"iluma",       label:"ILUMA"       },
+    { id:"consumables", label:"Consumables" },
+    { id:"accessories", label:"Accessories" }
+  ],
+
+  /* PRODUCTS ─────────────────────────────────────────────────────────
+     img:      main photo filename, uploaded beside this file
+     gallery:  extra photo filenames, "" for an empty slot
+     Names are factual. Everything else is placeholder.
+     ───────────────────────────────────────────────────────────────── */
+
+  products: [
+
+    { id:"p1", cat:"iluma-i", name:"IQOS ILUMA i PRIME",
+      kicker:"Flagship", short:"Wrapped finish, full touchscreen, separate holder.",
+      img:"", gallery:["",""],
+      lead:"The most fully featured model in the range. A wrapped outer sleeve over a metal frame, with a touchscreen on the pocket charger for settings, battery level and personalisation. The holder sits inside the charger and lifts out for use.",
+      specs:[["Range","ILUMA i"],["Format","Holder + pocket charger"],["Display","Touchscreen"],["Heating","Induction, bladeless"],["Charging","USB-C"]],
+      colours:[["Placeholder 1","#4a4e6d"],["Placeholder 2","#7d6b58"],["Placeholder 3","#2f3540"]] },
+
+    { id:"p2", cat:"iluma-i", name:"IQOS ILUMA i",
+      kicker:"Core", short:"Touchscreen charger with a separate holder.",
+      img:"", gallery:["",""],
+      lead:"The standard two-part model. A pocket charger with a touchscreen display, paired with a holder that lifts out for use and returns to charge. Lighter and more compact than the PRIME, with the same heating system.",
+      specs:[["Range","ILUMA i"],["Format","Holder + pocket charger"],["Display","Touchscreen"],["Heating","Induction, bladeless"],["Charging","USB-C"]],
+      colours:[["Placeholder 1","#3b4b6b"],["Placeholder 2","#6b5570"],["Placeholder 3","#33383f"]] },
+
+    { id:"p3", cat:"iluma-i", name:"IQOS ILUMA i ONE",
+      kicker:"All-in-one", short:"Single unit, nothing to separate.",
+      img:"", gallery:[""],
+      lead:"One piece rather than two. The holder and battery are combined in a single pocket-sized body, so there is no charger to carry alongside it. Designed for the simplest possible routine.",
+      specs:[["Range","ILUMA i"],["Format","All-in-one"],["Display","Indicator"],["Heating","Induction, bladeless"],["Charging","USB-C"]],
+      colours:[["Placeholder 1","#44506b"],["Placeholder 2","#6d5a4a"]] },
+
+    { id:"p4", cat:"iluma", name:"IQOS ILUMA PRIME",
+      kicker:"Premium", short:"Wrapped finish, holder and charger.",
+      img:"", gallery:["",""],
+      lead:"The premium model in the original ILUMA range. A wrapped sleeve over a metal body, with a holder that sits inside the pocket charger. Same bladeless heating as the rest of the range, without the touchscreen of the i series.",
+      specs:[["Range","ILUMA"],["Format","Holder + pocket charger"],["Heating","Induction, bladeless"],["Charging","USB-C"]],
+      colours:[["Placeholder 1","#5a4b6e"],["Placeholder 2","#7a6a55"]] },
+
+    { id:"p5", cat:"iluma", name:"IQOS ILUMA",
+      kicker:"Core", short:"The standard two-part model.",
+      img:"", gallery:[""],
+      lead:"The core ILUMA model. A pocket charger and a separate holder, in a simpler finish than the PRIME. Straightforward to use and the most widely stocked option in the range.",
+      specs:[["Range","ILUMA"],["Format","Holder + pocket charger"],["Heating","Induction, bladeless"],["Charging","USB-C"]],
+      colours:[["Placeholder 1","#3f4a63"],["Placeholder 2","#63564d"]] },
+
+    { id:"p6", cat:"iluma", name:"IQOS ILUMA ONE",
+      kicker:"All-in-one", short:"One piece, pocket sized.",
+      img:"", gallery:[""],
+      lead:"A single combined unit with no separate charger. The most compact option in the ILUMA range and the easiest to carry, with the same heating system as the two-part models.",
+      specs:[["Range","ILUMA"],["Format","All-in-one"],["Heating","Induction, bladeless"],["Charging","USB-C"]],
+      colours:[["Placeholder 1","#46506a"],["Placeholder 2","#6a5a68"]] },
+
+    { id:"c1", cat:"consumables", name:"TEREA",
+      kicker:"For ILUMA devices", short:"Tobacco sticks with an internal heating element.",
+      img:"", gallery:[""],
+      lead:"Designed specifically for ILUMA and ILUMA i devices. The heating element sits inside the stick itself rather than in the device, so there is no blade to clean. Not compatible with earlier IQOS models.",
+      specs:[["Compatible with","ILUMA / ILUMA i"],["Variants","[ confirm Lebanon range ]"],["Pack size","[ to confirm ]"]],
+      colours:[] },
+
+    { id:"c2", cat:"consumables", name:"DELIA",
+      kicker:"For ILUMA devices", short:"Alternative consumable for ILUMA devices.",
+      img:"", gallery:[""],
+      lead:"An alternative consumable option for ILUMA and ILUMA i devices. [ Confirm with the client whether DELIA is sold in Lebanon — delete this product entirely if not. ]",
+      specs:[["Compatible with","ILUMA / ILUMA i"],["Variants","[ confirm Lebanon range ]"],["Pack size","[ to confirm ]"]],
+      colours:[] },
+
+    { id:"a1", cat:"accessories", name:"Cases & Sleeves",
+      kicker:"Personalise", short:"Change the look and protect the device.",
+      img:"", gallery:["",""],
+      lead:"Interchangeable sleeves, silicone cases and leather-effect covers that change the appearance of the device and protect it in a pocket or bag. Different fittings apply to each model, so check compatibility before buying.",
+      specs:[["Materials","[ confirm range ]"],["Compatible with","[ confirm per model ]"]],
+      colours:[["Placeholder 1","#5c5148"],["Placeholder 2","#404a5c"],["Placeholder 3","#6b4f5a"]] },
+
+    { id:"a2", cat:"accessories", name:"Chargers & Cables",
+      kicker:"Essentials", short:"Replacement power accessories.",
+      img:"", gallery:[""],
+      lead:"Replacement USB-C cables, mains adapters and car chargers for keeping the device powered. Using the supplied or approved accessories is recommended to avoid affecting charging performance.",
+      specs:[["Type","USB-C"],["Compatible with","[ confirm per model ]"]],
+      colours:[] }
+  ],
+
+  productActions: { stores:"Find a store", back:"‹ All products" },
+
+  /* STORES ──────────────────────────────────────────────────────────
+     Every address and number below is a placeholder. Replace with the
+     client's verified store list.
+     ───────────────────────────────────────────────────────────────── */
+
+  stores: [
+    { city:"Beirut", list:[
+      { name:"[ Store name ]", addr:"[ Street, district, Beirut ]", hrs:"[ Opening hours ]", tel:"[ Phone ]" },
+      { name:"[ Store name ]", addr:"[ Street, district, Beirut ]", hrs:"[ Opening hours ]", tel:"[ Phone ]" }
+    ]},
+    { city:"Mount Lebanon", list:[
+      { name:"[ Store name ]", addr:"[ Street, Jounieh ]", hrs:"[ Opening hours ]", tel:"[ Phone ]" }
+    ]},
+    { city:"North", list:[
+      { name:"[ Store name ]", addr:"[ Street, Tripoli ]", hrs:"[ Opening hours ]", tel:"[ Phone ]" }
+    ]},
+    { city:"South", list:[
+      { name:"[ Store name ]", addr:"[ Street, Saida ]", hrs:"[ Opening hours ]", tel:"[ Phone ]" }
+    ]}
+  ],
+
+  support: {
+    title: "Take it with you",
+    body:  "Scan the code to carry on browsing on your own phone, where you can see the full range and place an order.",
+    qrImg: "",              // e.g. "qr.png" — upload beside this file
+    qrHint:"qr.png"
+  },
+
+  idleTimeout: 90,          // seconds before returning to the attract screen
+  idleWarnAt:  15
+};
+
+/* ════════════════════════════════════════════════════════════════════
+   ▲▲▲   E N D   O F   E D I T A B L E   C O N T E N T   ▲▲▲
+   ════════════════════════════════════════════════════════════════════ */
+
+const $ = id => document.getElementById(id);
+const screens = { attract:$('attract'), age:$('age'), main:$('main') };
+let currentScreen=null, view='products', cat=CONTENT.categories[0].id;
+let idleTimer=null, tickTimer=null, left=0;
+
+$('demoTag').textContent = CONTENT.demoTag;
+if(!CONTENT.demoTag) $('demoTag').style.display='none';
+$('aMark').textContent=CONTENT.attract.mark;
+$('aTitle').innerHTML=CONTENT.attract.title;
+$('aSub').textContent=CONTENT.attract.sub;
+$('aTap').textContent=CONTENT.attract.tap;
+$('gTitle').textContent=CONTENT.ageGate.title;
+$('gLegal').textContent=CONTENT.ageGate.legal;
+$('gGo').textContent=CONTENT.ageGate.button;
+$('mBrand').textContent=CONTENT.brand;
+$('mHomeLbl').textContent=CONTENT.homeLabel;
+$('warnEn').textContent=CONTENT.warning.en;
+$('warnAr').textContent=CONTENT.warning.ar;
+$('mNav').innerHTML=CONTENT.nav.map(n=>'<button data-view="'+n.id+'">'+n.label+'</button>').join('');
+
+(function(){
+  const months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  $('gMonth').innerHTML='<option value="">Month</option>'+months.map((n,i)=>'<option value="'+(i+1)+'">'+n+'</option>').join('');
+  const now=new Date().getFullYear(); let o='<option value="">Year</option>';
+  for(let v=now-16;v>=now-90;v--) o+='<option value="'+v+'">'+v+'</option>';
+  $('gYear').innerHTML=o;
+})();
+
+const PIN='<svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>';
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+function slot(file,hint){
+  if(file) return '<div class="slot"><img src="'+esc(file)+'" alt=""></div>';
+  return '<div class="slot empty"><span class="lbl">ADD IMAGE</span><span class="fn">'+esc(hint)+'</span></div>';
+}
+
+function show(name){
+  Object.values(screens).forEach(s=>s.classList.remove('on','vis'));
+  const s=screens[name]; s.classList.add('on');
+  requestAnimationFrame(()=>s.classList.add('vis'));
+  currentScreen=name;
+  if(name==='main') bump(); else stopIdle();
+}
+
+$('attract').addEventListener('pointerdown',()=>{
+  if(CONTENT.ageGate.enabled){ $('ageErr').textContent=''; show('age'); }
+  else { view='products'; render(); show('main'); }
+});
+
+$('gGo').addEventListener('click',()=>{
+  const m=parseInt($('gMonth').value,10), y=parseInt($('gYear').value,10);
+  if(!m||!y){ $('ageErr').textContent='Please select a month and year.'; return; }
+  const now=new Date(); let age=now.getFullYear()-y;
+  if(now.getMonth()+1<m) age--;
+  if(age<CONTENT.ageGate.minAge){ $('ageErr').textContent=CONTENT.ageGate.error; setTimeout(reset,2600); return; }
+  view='products'; render(); show('main');
+});
+
+$('mHome').addEventListener('click',reset);
+$('mNav').querySelectorAll('button').forEach(b=>
+  b.addEventListener('click',()=>{ view=b.dataset.view; render(); bump(); }));
+
+function reset(){
+  $('gMonth').value=''; $('gYear').value=''; $('ageErr').textContent='';
+  view='products'; cat=CONTENT.categories[0].id; show('attract');
+}
+
+function render(){
+  $('mNav').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.view===view));
+  const body=$('mBody'); body.scrollTop=0;
+
+  if(view==='products'){
+    const tabs='<div class="cats">'+CONTENT.categories.map(c=>
+      '<button data-cat="'+c.id+'"'+(c.id===cat?' class="sel"':'')+'>'+esc(c.label)+'</button>').join('')+'</div>';
+    const items=CONTENT.products.filter(p=>p.cat===cat);
+    const grid='<div class="grid">'+items.map(p=>
+      '<div class="card" data-id="'+p.id+'">'+slot(p.img,p.img||slug(p.name)+'.png')
+      +'<h3>'+esc(p.name)+'</h3><p>'+esc(p.short)+'</p></div>').join('')+'</div>';
+    body.innerHTML=tabs+grid;
+    body.querySelectorAll('.cats button').forEach(b=>
+      b.addEventListener('click',()=>{ cat=b.dataset.cat; render(); bump(); }));
+    body.querySelectorAll('.card').forEach(c=>
+      c.addEventListener('click',()=>{ detail(c.dataset.id); bump(); }));
+  }
+
+  else if(view==='stores'){
+    body.innerHTML=CONTENT.stores.map(g=>
+      '<div class="city">'+esc(g.city)+'</div>'+g.list.map(s=>
+        '<div class="store"><div class="pin">'+PIN+'</div><div>'
+        +'<h4>'+esc(s.name)+'</h4><p>'+esc(s.addr)+'</p>'
+        +'<div class="hrs">'+esc(s.hrs)+'</div><div class="tel">'+esc(s.tel)+'</div>'
+        +'</div></div>').join('')).join('');
+  }
+
+  else {
+    const q=CONTENT.support.qrImg
+      ? '<div class="qr"><img src="'+esc(CONTENT.support.qrImg)+'" alt=""></div>'
+      : '<div class="qr"><span class="lbl">ADD QR CODE</span><span class="fn">'+esc(CONTENT.support.qrHint)+'</span></div>';
+    body.innerHTML='<div class="about"><h2>'+esc(CONTENT.support.title)+'</h2>'+q
+      +'<p>'+esc(CONTENT.support.body)+'</p></div>';
+  }
+}
+
+function detail(id){
+  const p=CONTENT.products.find(x=>x.id===id); if(!p) return;
+  const base=slug(p.name);
+
+  const hero = p.img
+    ? '<div class="hero"><img src="'+esc(p.img)+'" alt=""></div>'
+    : '<div class="hero empty"><span class="lbl">ADD MAIN IMAGE</span><span class="fn">'+esc(base)+'.png</span></div>';
+
+  const gal = (p.gallery&&p.gallery.length)
+    ? '<div class="gallery">'+p.gallery.map((g,i)=> g
+        ? '<div class="thumb"><img src="'+esc(g)+'" alt=""></div>'
+        : '<div class="thumb"><span>+'+(i+2)+'</span></div>').join('')+'</div>'
+    : '';
+
+  const sw = (p.colours&&p.colours.length)
+    ? '<div class="swatches">'+p.colours.map(c=>
+        '<span class="sw"><i style="background:'+esc(c[1])+'"></i>'+esc(c[0])+'</span>').join('')+'</div>'
+    : '';
+
+  $('mBody').innerHTML=
+    '<button class="iconbtn" id="back" style="margin-bottom:18px">'+esc(CONTENT.productActions.back)+'</button>'
+    +'<div class="detail"><div>'+hero+gal+'</div><div>'
+    +'<div class="kicker">'+esc(p.kicker)+'</div>'
+    +'<h2>'+esc(p.name)+'</h2><p class="lead">'+esc(p.lead)+'</p>'+sw
+    +'<dl class="specs">'+p.specs.map(s=>
+      '<div class="spec"><dt>'+esc(s[0])+'</dt><dd>'+esc(s[1])+'</dd></div>').join('')+'</dl>'
+    +'<div class="actions"><button class="btn ghost" id="toStores">'+esc(CONTENT.productActions.stores)+'</button></div>'
+    +'</div></div>';
+
+  $('back').addEventListener('click',()=>{ view='products'; render(); bump(); });
+  $('toStores').addEventListener('click',()=>{ view='stores'; render(); bump(); });
+  $('mBody').scrollTop=0;
+}
+
+function stopIdle(){ clearTimeout(idleTimer); clearInterval(tickTimer); $('idle').classList.remove('on'); }
+function bump(){
+  if(currentScreen!=='main') return;
+  clearTimeout(idleTimer); clearInterval(tickTimer); $('idle').classList.remove('on');
+  left=CONTENT.idleTimeout;
+  tickTimer=setInterval(()=>{
+    left--;
+    if(left<=CONTENT.idleWarnAt&&left>0){
+      $('idle').classList.add('on');
+      $('idleText').textContent='Returning to the start in '+left+'s — touch to stay';
+    }
+    if(left<=0){ stopIdle(); reset(); }
+  },1000);
+  idleTimer=setTimeout(()=>{ stopIdle(); reset(); },CONTENT.idleTimeout*1000);
+}
+['pointerdown','keydown'].forEach(e=>$('main').addEventListener(e,bump,true));
+
+let wakeLock=null;
+async function keepAwake(){ try{ if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen'); }catch(e){} }
+keepAwake();
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') keepAwake(); });
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('dragstart',e=>e.preventDefault());
+document.addEventListener('gesturestart',e=>e.preventDefault());
+
+show('attract');
+</script>
+</body>
+</html>
